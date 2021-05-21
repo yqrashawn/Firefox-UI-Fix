@@ -479,6 +479,7 @@
   #fxa-menu-avatar {
     display: -moz-inline-box !important;
     margin-inline-end: var(--arrowpanel-menuitem-padding);
+    -moz-box-ordinal-group: 2 !important;
   }
 
   .syncNowBtn {
