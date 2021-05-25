@@ -125,12 +125,12 @@
   :root:not([uidensity=touch]) .tabbrowser-tab:is([image], [pinned]) > .tab-stack > .tab-content[attention]:not([selected="true"]),
   :root:not([uidensity=touch]) .tabbrowser-tab > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) {
     /* Original: center bottom calc(6.5px + var(--tabs-navbar-shadow-size)); */
-    background-position: center bottom calc(4.5px + var(--tabs-navbar-shadow-size)) !important;
+    background-position-y: bottom calc(4.5px + var(--tabs-navbar-shadow-size)) !important;
   }
   :root[uidensity=compact] .tabbrowser-tab:is([image], [pinned]) > .tab-stack > .tab-content[attention]:not([selected="true"]),
   :root[uidensity=compact] .tabbrowser-tab > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) {
     /* Original: center bottom calc(6.5px + var(--tabs-navbar-shadow-size)); */
-    background-position: center bottom calc(.5px + var(--tabs-navbar-shadow-size)) !important;
+    background-position-y: bottom calc(.5px + var(--tabs-navbar-shadow-size)) !important;
   }
 
   /** Tab Bar - Connect to window *********************************************/
@@ -157,6 +157,11 @@
   #TabsToolbar[brighttext] #tabbrowser-tabs:not([noshadowfortests]) .tabbrowser-tab:is([visuallyselected="true"],
   [multiselected]) > .tab-stack > .tab-background:-moz-lwtheme {
     box-shadow: 0 0 1px var(--toolbar-color) !important;
+  }
+
+  /* Pinned Tab - tabbrowser-arrowscrollbox overflowing */
+  #tabbrowser-tabs[positionpinnedtabs] > #tabbrowser-arrowscrollbox > .tabbrowser-tab[pinned] {
+    z-index: 0 !important;
   }
 
   /** Selected Tab - Bottom Rounded Corner ************************************/
@@ -215,7 +220,7 @@
     /* Bar Color */
     opacity: var(--tab-separator-opacity);
     transition: opacity .2s var(--ease-basic) !important;
-    background-color: var(--toolbarseparator-color) !important;
+    background-color: color-mix(in srgb, currentColor 20%, transparent) !important; /*  Replace var(--toolbarseparator-color) - Hard coded for compatibility */
   }
 
   .tab-background::before {
@@ -268,7 +273,8 @@
   }
 
   /* Makes the speaker icon to always appear if the tab is playing (not only on hover) */
-  .tab-icon-overlay:not([crashed]) {
+  .tab-icon-overlay:not([crashed]),
+  .tab-icon-overlay[pinned][crashed][selected] {
     /* Position */
     top: -3.5px !important;
     inset-inline-end: -9px !important;
@@ -279,12 +285,14 @@
     border-radius: 10px !important;
     width:  17px !important;
     height: 17px !important;
-
+  }
+  .tab-icon-overlay:not([sharing], [crashed]):is([soundplaying], [muted], [activemedia-blocked]) {
     /* Color */
     color:  currentColor !important;
     stroke: transparent !important;
     background: transparent !important;
     fill-opacity: 0.8 !important;
+    opacity: 1 !important;
   }
   .tab-icon-overlay:not([pinned], [sharing], [crashed]):is([soundplaying], [muted], [activemedia-blocked]) {
     margin-inline-end: 9.5px !important;
@@ -332,6 +340,35 @@
 
   .tabbrowser-tab:not([image]) .tab-icon-overlay:not([pinned], [sharing],[crashed]):hover {
     padding: 0 !important;
+  }
+
+  /** PictureInPicture Tab - Show PIP Icon ************************************/
+  .tab-icon-sound[pictureinpicture]:not([pinned]) {
+    /* Shape */
+    display: -moz-inline-box !important;
+    width:  14px;
+    height: 14px;
+    -moz-box-ordinal-group: 2 !important;
+
+    /* Color */
+    fill: currentColor;
+    opacity: 0.8;
+    -moz-context-properties: fill;
+
+    /* Icon */
+    list-style-image: url(chrome://global/skin/media/picture-in-picture-open.svg);
+  }
+  .tab-icon-sound[pictureinpicture]:not([pinned])[selected] {
+    opacity: 0.95;
+  }
+
+  /* Close Button's position */
+  .tabbrowser-tab[pictureinpicture]:not([pinned]) .tab-close-button {
+    margin-left: 7px !important;
+    -moz-box-ordinal-group: 2 !important;
+  }
+  .tabbrowser-tab[pictureinpicture]:not([pinned]):hover .tab-close-button {
+    margin-left: 0px !important;
   }
 
   /** Pinned Tab - Replace Favicon to Close Button at Selected ****************/
@@ -430,7 +467,37 @@
   /* Pinned Tab - Titlechanged Indicator override */
   .tabbrowser-tab:is([image], [pinned]) > .tab-stack > .tab-content[attention]:not([selected="true"]) .tab-icon-image,
   .tabbrowser-tab > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) .tab-icon-image {
-    border-bottom: 4px dotted var(--identity-icon-color) !important;
+    border-bottom: 2px solid transparent !important;
+  }
+
+  .tabbrowser-tab:is([image], [pinned])[usercontextid] > .tab-stack > .tab-content[attention]:not([selected="true"]),
+  .tabbrowser-tab[usercontextid] > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) {
+    /* Original: radial-gradient(circle, var(--attention-icon-color), var(--attention-icon-color) 2px, transparent 2px); */
+    --dotted-identity-image: radial-gradient(circle, var(--identity-icon-color), var(--identity-icon-color) 2px, transparent 2px);
+    background-image: var(--dotted-identity-image), var(--dotted-identity-image), var(--dotted-identity-image) !important;
+    background-position-x: 32%, 50%, 70% !important;
+  }
+  :root[uidensity=compact] .tabbrowser-tab:is([image], [pinned])[usercontextid] > .tab-stack > .tab-content[attention]:not([selected="true"]),
+  :root[uidensity=compact] .tabbrowser-tab[usercontextid] > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) {
+    /* Original: radial-gradient(circle, var(--attention-icon-color), var(--attention-icon-color) 2px, transparent 2px); */
+    var(--dotted-identity-image) !important;
+    background-position-x: 30%, 50%, 70% !important;
+  }
+
+  /* Pinned Tab - Titlechanged & soundplaying */
+  .tabbrowser-tab:is([image], [pinned])[usercontextid]:is([soundplaying], [muted], [activemedia-blocked]) > .tab-stack > .tab-content[attention]:not([selected="true"]),
+  .tabbrowser-tab[usercontextid]:is([soundplaying], [muted], [activemedia-blocked]) > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) {
+    background-position-x: calc(32% - 1px), calc(50% - 1px), calc(70% - 1px) !important;
+  }
+  :root[uidensity=compact] .tabbrowser-tab:is([image], [pinned])[usercontextid]:is([soundplaying], [muted], [activemedia-blocked]) > .tab-stack > .tab-content[attention]:not([selected="true"]),
+  :root[uidensity=compact] .tabbrowser-tab[usercontextid]:is([soundplaying], [muted], [activemedia-blocked]) > .tab-stack > .tab-content[pinned][titlechanged]:not([selected="true"]) {
+    var(--dotted-identity-image) !important;
+    background-position-x: calc(30% - 1px), calc(50% - 1px), calc(70% - 1px) !important;
+  }
+
+  /** Crashed Tab - Don't show Favicons ***************************************/
+  .tab-icon-image[crashed] {
+    display: none !important;
   }
 
   /** URL Bar - Reduce Padding ************************************************/
