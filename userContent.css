@@ -2,3 +2,21 @@
 @import url("css/leptonContent.css");
 
 /** Add your custom styles below **********************************************/
+
+@-moz-document url-prefix(about:blank) {
+  html > body:empty {
+    background-color: rgb(19, 19, 20) !important;
+  }
+}
+@-moz-document url(about:blank) {
+  html > body:empty {
+    background-color: rgb(19, 19, 20) !important;
+  }
+}
+
+#context-print-selection {
+  display: none !important;
+}
+#context-take-screenshot {
+  display: none !important;
+}

@@ -368,3 +368,10 @@ user_pref("mousewheel.transaction.timeout",                  1500);            /
 user_pref("toolkit.scrollbox.horizontalScrollDistance",         4);            ///        5
 user_pref("toolkit.scrollbox.verticalScrollDistance",           3);            ///        3
 */
+
+user_pref("services.sync.prefs.dangerously_allow_arbitrary", true)
+user_pref("browser.tabs.closeTabByDblclick", true)
+user_pref("browser.tabs.tabClipWidth", 30)
+user_pref("browser.tabs.tabMinWidth", 30)
+user_pref("xpinstall.signatures.required", false)
+user_pref("security.enterprise_roots.enabled", true)
